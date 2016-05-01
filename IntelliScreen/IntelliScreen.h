@@ -48,6 +48,9 @@ class IntelliScreen
 	virtual uint8_t getModeAffi() {return _mode_affi;}
 	void setModeCalcul(uint8_t mode) {_mode_calcul = mode;}
 	void setModeAffi(uint8_t mode) {_mode_affi = mode;}
+	void setModeAffiPrec(uint8_t mode) {_mode_affi_prec = mode;}
+	void setStoredMode(uint8_t mode) {_stored_mode = mode;}
+	uint8_t getStoredMode() {return _stored_mode;}
 	uint8_t getSelectionMenu() {return _selectionMenu;}
 	uint8_t getNbElemMenu() {return _nb_elem_menu;}
 	uint8_t getBackLight() {return _BL_level;}
@@ -68,6 +71,7 @@ class IntelliScreen
 
  private:
     uint8_t _mode_affi, _mode_affi_prec, _mode_calcul;
+	uint8_t _stored_mode;
     uint8_t _selectionMenu, _pendingAction;
     uint8_t _nb_elem_menu;
 	uint8_t _BL_level;

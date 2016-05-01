@@ -231,7 +231,7 @@ String Nordic::encodeOrder(float avance, float curTime) {
     res += "02";
   }
 
-  Serial.print(String("Partner= ") + String(partner, 2) + "  -> ");
+  //Serial.print(String("Partner= ") + String(partner, 2) + "  -> ");
 
   avt_pt = (uint8_t)fabs(partner);
   i_tmp = fabs(partner) * 100.;
@@ -248,7 +248,7 @@ String Nordic::encodeOrder(float avance, float curTime) {
     res += "0";
   }
 
-  Serial.println(res);
+  //Serial.println(res);
   
   return res;
 }
