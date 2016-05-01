@@ -2,7 +2,8 @@
 TinyGPS - a small GPS library for Arduino providing basic NMEA parsing
 Based on work by and "distance_to" and "course_to" courtesy of Maarten Lamers.
 Suggestion to add satellites(), course_to(), and cardinal(), by Matt Monson.
-Copyright (C) 2008-2012 Mikal Hart
+Precision improvements suggested by Wayne Holder.
+Copyright (C) 2008-2013 Mikal Hart
 All rights reserved.
 
 This library is free software; you can redistribute it and/or
@@ -29,7 +30,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "WProgram.h"
 #endif
 
-#define _GPS_VERSION 12 // software version of this library
+#include <stdlib.h>
+
+#define _GPS_VERSION 13 // software version of this library
 #define _GPS_MPH_PER_KNOT 1.15077945
 #define _GPS_MPS_PER_KNOT 0.51444444
 #define _GPS_KMPH_PER_KNOT 1.852
@@ -54,6 +57,7 @@ public:
   bool encode(char c); // process one character received from GPS
   TinyGPS &operator << (char c) {encode(c); return *this;}
 
+
   // lat/long in hundred thousandths of a degree and age of fix in milliseconds
   void get_position(long *latitude, long *longitude, unsigned long *fix_age = 0);
 
@@ -70,10 +74,14 @@ public:
   inline unsigned long speed() { return _speed; }
 
   // satellites used in last full GPGGA sentence
-  inline unsigned short satellites() { if (_numsats==GPS_INVALID_SATELLITES) return 0; else return _numsats;}
+  inline unsigned short satellites() { return _numsats; }
 
   // horizontal dilution of precision in 100ths
-  inline unsigned long hdop() { if (_hdop==GPS_INVALID_HDOP) return 255; else return _hdop;}
+  inline unsigned long hdop() { return _hdop; }
+  
+  inline unsigned short sview() {return _sativ; }
+  
+  inline bool isDataValid() {return _gps_data_good; }
 
   void f_get_position(float *latitude, float *longitude, unsigned long *fix_age = 0);
   void crack_datetime(int *year, byte *month, byte *day, 
@@ -96,7 +104,7 @@ public:
 #endif
 
 private:
-  enum {_GPS_SENTENCE_GPGGA, _GPS_SENTENCE_GPRMC, _GPS_SENTENCE_OTHER};
+  enum {_GPS_SENTENCE_GPGGA, _GPS_SENTENCE_GPRMC, _GPS_SENTENCE_GPGSV, _GPS_SENTENCE_OTHER};
 
   // properties
   unsigned long _time, _new_time;
@@ -108,6 +116,7 @@ private:
   unsigned long  _course, _new_course;
   unsigned long  _hdop, _new_hdop;
   unsigned short _numsats, _new_numsats;
+  unsigned short _sativ, _new_sativ;
 
   unsigned long _last_time_fix, _new_time_fix;
   unsigned long _last_position_fix, _new_position_fix;
