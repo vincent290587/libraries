@@ -13,6 +13,7 @@
 #define _CAD_TERM    "CAD"
 #define _ANCS_TERM   "ANCS"
 #define _PC_TERM     "DWN"
+#define _BTN_TERM    "BTN"
 #define _DBG_TERM    "DBG"
 
 Nordic::Nordic() {
@@ -112,6 +113,8 @@ uint8_t Nordic::term_complete() {
       _sentence_type = _SENTENCE_ANCS;
     else if (!nstrcmp(_term, _PC_TERM))
       _sentence_type = _SENTENCE_PC;
+    else if (!nstrcmp(_term, _BTN_TERM))
+      _sentence_type = _SENTENCE_BTN;
     else if (!nstrcmp(_term, _DBG_TERM))
       _sentence_type = _SENTENCE_DBG;
     else
@@ -173,6 +176,10 @@ uint8_t Nordic::term_complete() {
         }
         break;
       
+	  case COMBINE(_SENTENCE_BTN, 1):
+        _btn = natol(_term) + 1;
+        ret_val = _SENTENCE_BTN;
+        break;
 		
       case COMBINE(_SENTENCE_PC, 1):
         _pc = natol(_term);

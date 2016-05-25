@@ -82,6 +82,8 @@ public:
   inline unsigned short sview() {return _sativ; }
   
   inline bool isDataValid() {return _gps_data_good; }
+  
+  inline unsigned long getFixTime() {return _last_position_fix; }
 
   void f_get_position(float *latitude, float *longitude, unsigned long *fix_age = 0);
   void crack_datetime(int *year, byte *month, byte *day, 
