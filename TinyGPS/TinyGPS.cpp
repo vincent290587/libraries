@@ -36,7 +36,7 @@ TinyGPS::TinyGPS()
   ,  _speed(GPS_INVALID_SPEED)
   ,  _course(GPS_INVALID_ANGLE)
   ,  _hdop(GPS_INVALID_HDOP)
-  ,  _numsats(GPS_INVALID_SATELLITES)
+  ,  _numsats(0)
   ,  _sativ(0)
   ,  _last_time_fix(GPS_INVALID_FIX_TIME)
   ,  _last_position_fix(GPS_INVALID_FIX_TIME)
@@ -246,7 +246,7 @@ bool TinyGPS::term_complete()
       break;
 	case COMBINE(_GPS_SENTENCE_GPGSV, 3):
       _new_sativ = atoi(_term);
-	  _sativ = _new_sativ;
+	  _gps_data_good = true;
       break;
     case COMBINE(_GPS_SENTENCE_GPRMC, 4): // N/S
     case COMBINE(_GPS_SENTENCE_GPGGA, 3):
@@ -272,7 +272,7 @@ bool TinyGPS::term_complete()
       _new_date = gpsatol(_term);
       break;
     case COMBINE(_GPS_SENTENCE_GPGGA, 6): // Fix data (GPGGA)
-      //_gps_data_good = _term[0] > '0';
+      _gps_data_good = _term[0] > '0';
       break;
     case COMBINE(_GPS_SENTENCE_GPGGA, 7): // Satellites used (GPGGA)
       _new_numsats = (unsigned char)atoi(_term);

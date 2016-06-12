@@ -225,7 +225,7 @@ unsigned long Nordic::parse_decimal()
 
 
 String Nordic::encodeOrder(float avance, float curTime) {
-  String res = "$";
+  String res = "  $";
   String tmp;
   int i_tmp;
   uint8_t avt_pt, ap_pt;

@@ -57,7 +57,7 @@ void IntelliScreen::menuClic () {
   if (_selectionMenu == 0) {
 	  _mode_affi = _mode_affi_prec;
   } else if (_selectionMenu == 1) {
-	  _BL_level += 32;
+	  _BL_level != _BL_level;
   } else {
 	  _mode_affi = _selectionMenu;
   }

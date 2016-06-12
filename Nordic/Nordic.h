@@ -12,7 +12,7 @@
 
 #define MAX_SIZE 150
 
-#define COMBINE(sentence_type, term_number) (((unsigned)(sentence_type) * 12) | term_number)
+#define COMBINE(sentence_type, term_number) (((unsigned)(sentence_type) << 5) | term_number)
 
 enum {
   _SENTENCE_NONE, _SENTENCE_OTHER, _SENTENCE_HRM, _SENTENCE_CAD, _SENTENCE_ANCS, _SENTENCE_PC, _SENTENCE_BTN, _SENTENCE_DBG
