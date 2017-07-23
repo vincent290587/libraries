@@ -8,7 +8,7 @@
 #include <string.h>
 #include "Nordic.h"
 
-
+#define _LOC_TERM    "LOC"
 #define _HRM_TERM    "HRM"
 #define _CAD_TERM    "CAD"
 #define _ANCS_TERM   "ANCS"
@@ -105,7 +105,9 @@ uint8_t Nordic::term_complete() {
 
   // the first term determines the sentence type
   if (_term_number == 0) {
-    if (!nstrcmp(_term, _HRM_TERM))
+    if (!nstrcmp(_term, _LOC_TERM))
+      _sentence_type = _SENTENCE_LOC;
+    else if (!nstrcmp(_term, _HRM_TERM))
       _sentence_type = _SENTENCE_HRM;
     else if (!nstrcmp(_term, _CAD_TERM))
       _sentence_type = _SENTENCE_CAD;
@@ -125,6 +127,17 @@ uint8_t Nordic::term_complete() {
   if (_sentence_type != _SENTENCE_OTHER && _term[0]) {
     // on doit parser l'info (_term)
     switch (COMBINE(_sentence_type, _term_number)) {
+    case COMBINE(_SENTENCE_LOC, 1):
+        _sec_jour = natol(_term);
+        break;
+	case COMBINE(_SENTENCE_LOC, 2):
+        _lat = parse_sint();
+        break;
+      case COMBINE(_SENTENCE_LOC, 3):
+        _lon = parse_sint();
+        ret_val = _SENTENCE_LOC;
+        break;
+
       case COMBINE(_SENTENCE_HRM, 1):
         _bpm = natol(_term);
         break;
@@ -137,7 +150,7 @@ uint8_t Nordic::term_complete() {
         _rpm = natol(_term);
         break;
       case COMBINE(_SENTENCE_CAD, 2):
-        _speed = (float)parse_decimal() / 100.;
+        _speed = (float)natol(_term) / 100.;
         ret_val = _SENTENCE_CAD;
         break;
 
@@ -209,7 +222,7 @@ unsigned long Nordic::parse_decimal()
   char *p = _term;
   bool isneg = *p == '-';
   if (isneg) ++p;
-  unsigned long ret = 100UL * natol(p);
+  unsigned long ret = natol(p);
   while (isdigit(*p)) ++p;
   if (*p == '.')
   {
@@ -223,9 +236,19 @@ unsigned long Nordic::parse_decimal()
   return isneg ? -ret : ret;
 }
 
+int32_t Nordic::parse_sint()
+{
+  char *p = _term;
+  bool isneg = *p == '-';
+  if (isneg) ++p;
+  int32_t ret = natol(p);
+
+  return isneg ? -ret : ret;
+}
+
 
 String Nordic::encodeOrder(float avance, float curTime) {
-  String res = "  $";
+  String res = "$";
   String tmp;
   int i_tmp;
   uint8_t avt_pt, ap_pt;
@@ -255,9 +278,11 @@ String Nordic::encodeOrder(float avance, float curTime) {
     res += "0";
   }
 
-  //Serial.println(res);
+#ifdef __DEBUG_NRF__
+  Serial.println(res);
+#endif
   
-  return res;
+  return " " + res;
 }
 
 

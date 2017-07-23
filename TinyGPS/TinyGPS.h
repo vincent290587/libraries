@@ -81,7 +81,8 @@ public:
   
   inline unsigned short sview() {return _sativ; }
   
-  inline bool isDataValid() {return _gps_data_good; }
+  inline bool isGPRMCValid() {return _gprmc_data_good; }
+  inline bool isGPGGAValid() {return _gpgga_data_good; }
   
   inline unsigned long getFixTime() {return _last_position_fix; }
 
@@ -130,7 +131,9 @@ private:
   byte _sentence_type;
   byte _term_number;
   byte _term_offset;
-  bool _gps_data_good;
+  bool _gprmc_data_good;
+  bool _gpgsv_data_good;
+  bool _gpgga_data_good;
 
 #ifndef _GPS_NO_STATS
   // statistics

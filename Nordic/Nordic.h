@@ -15,7 +15,7 @@
 #define COMBINE(sentence_type, term_number) (((unsigned)(sentence_type) << 5) | term_number)
 
 enum {
-  _SENTENCE_NONE, _SENTENCE_OTHER, _SENTENCE_HRM, _SENTENCE_CAD, _SENTENCE_ANCS, _SENTENCE_PC, _SENTENCE_BTN, _SENTENCE_DBG
+  _SENTENCE_NONE, _SENTENCE_OTHER, _SENTENCE_LOC, _SENTENCE_HRM, _SENTENCE_CAD, _SENTENCE_ANCS, _SENTENCE_PC, _SENTENCE_BTN, _SENTENCE_DBG
 };
 
 class Nordic {
@@ -38,6 +38,15 @@ class Nordic {
 	uint8_t getBTN() {
 		return _btn;
 	}
+	int32_t getLat() const {
+      return _lat;
+    }
+	int32_t getLon() const {
+      return _lon;
+    }
+	unsigned long getSecJ() const {
+      return _sec_jour;
+    }
     unsigned long getBPM() {
       return _bpm;
     }
@@ -81,6 +90,7 @@ class Nordic {
       return c >= '0' && c <= '9';
     }
     unsigned long parse_decimal();
+	int32_t parse_sint();
     uint8_t term_complete();
 
 	uint8_t _pc;
@@ -88,6 +98,10 @@ class Nordic {
     unsigned long _bpm, _rr;
     unsigned long _rpm;
 	float _speed;
+	
+	int32_t _lat;
+	int32_t _lon;
+	unsigned long _sec_jour;
 	
     unsigned long _ancs_type;
     String _ancs_msg;
