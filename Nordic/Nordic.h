@@ -44,6 +44,9 @@ class Nordic {
 	int32_t getLon() const {
       return _lon;
     }
+	int32_t getEle() const {
+      return _ele;
+    }
 	unsigned long getSecJ() const {
       return _sec_jour;
     }
@@ -101,6 +104,7 @@ class Nordic {
 	
 	int32_t _lat;
 	int32_t _lon;
+	int32_t _ele;
 	unsigned long _sec_jour;
 	
     unsigned long _ancs_type;

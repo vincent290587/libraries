@@ -127,14 +127,17 @@ uint8_t Nordic::term_complete() {
   if (_sentence_type != _SENTENCE_OTHER && _term[0]) {
     // on doit parser l'info (_term)
     switch (COMBINE(_sentence_type, _term_number)) {
-    case COMBINE(_SENTENCE_LOC, 1):
+      case COMBINE(_SENTENCE_LOC, 1):
         _sec_jour = natol(_term);
         break;
-	case COMBINE(_SENTENCE_LOC, 2):
+	  case COMBINE(_SENTENCE_LOC, 2):
         _lat = parse_sint();
         break;
       case COMBINE(_SENTENCE_LOC, 3):
         _lon = parse_sint();
+        break;
+	  case COMBINE(_SENTENCE_LOC, 4):
+        _ele = parse_sint();
         ret_val = _SENTENCE_LOC;
         break;
 
