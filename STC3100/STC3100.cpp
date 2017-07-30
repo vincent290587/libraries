@@ -27,7 +27,7 @@
     @brief  Writes an 8 bit value over I2C
 */
 /**************************************************************************/
-static void writeCommand(byte reg, byte value)
+void STC3100::writeCommand(byte reg, byte value)
 {
   Wire.beginTransmission((uint8_t)STC3100_ADDRESS);
   #if ARDUINO >= 100
@@ -45,7 +45,7 @@ static void writeCommand(byte reg, byte value)
     @brief  Reads an 8 bit value over I2C
 */
 /**************************************************************************/
-static void read8(byte reg, uint8_t *value)
+void STC3100::read8(byte reg, uint8_t *value)
 {
   Wire.beginTransmission((uint8_t)STC3100_ADDRESS);
   #if ARDUINO >= 100
@@ -68,7 +68,7 @@ static void read8(byte reg, uint8_t *value)
     @brief  Reads a 16 bit value over I2C
 */
 /**************************************************************************/
-static void read16(byte reg, uint16_t *value)
+void STC3100::read16(byte reg, uint16_t *value)
 {
   uint16_t data;
   Wire.beginTransmission((uint8_t)STC3100_ADDRESS);
@@ -96,7 +96,7 @@ static void read16(byte reg, uint16_t *value)
     @brief  Reads a signed 16 bit value over I2C
 */
 /**************************************************************************/
-static void readS16(byte reg, int16_t *value)
+void STC3100::readS16(byte reg, int16_t *value)
 {
   uint16_t i;
   read16(reg, &i);
@@ -120,7 +120,7 @@ void STC3100::readChip()
   Wire.endTransmission();
 }
 
-void STC3100::computeCounter(float *counter)
+void STC3100::computeCounter()
 {
 	uint8_t tl=_stc_data.CounterLow, th=_stc_data.CounterHigh;
 	uint32_t t;
@@ -129,10 +129,10 @@ void STC3100::computeCounter(float *counter)
 	t = th;
 	t <<= 8;
 	val = (t & 0xFF00) | tl;
-	*counter = (float) val;
+	_counter = (float) val;
 }
 
-void STC3100::computeVoltage(float *voltage)
+void STC3100::computeVoltage()
 {
 
     uint8_t tl=_stc_data.VoltageLow, th=_stc_data.VoltageHigh;
@@ -142,32 +142,29 @@ void STC3100::computeVoltage(float *voltage)
 	t = th;
 	t <<= 8;
 	val = (t & 0xFF00) | tl;
-	*voltage = (float) val * 0.00244;
+
+	_voltage = (float)  val * 0.00244;
 	
 }
 
-void STC3100::computeCharge(float *charge)
+void STC3100::computeCharge()
 {
 
     uint8_t tl=_stc_data.ChargeLow, th=_stc_data.ChargeHigh;
-	uint32_t t;
-	int val;
-	
-	t = th;
-	t <<= 8;
-	val = (t & 0xFF00) | tl;
-	*charge = ((float) val * 6.7 / _r_sens);
-	
-}
-
-void STC3100::computeCurrent(float *current)
-{
-    uint8_t tl=_stc_data.CurrentLow, th=_stc_data.CurrentHigh;
-	uint16_t t;
 	float val;
 	
 	val = compute2Complement(th, tl);
-	*current = (val * 11.77 / _r_sens);
+	_charge = (val * 6.7 / _r_sens);
+	
+}
+
+void STC3100::computeCurrent()
+{
+    uint8_t tl=_stc_data.CurrentLow, th=_stc_data.CurrentHigh;
+	float val;
+	
+	val = compute2Complement(th, tl);
+	_current = (val * 11.77 / _r_sens);
 	
 }
 
@@ -192,7 +189,7 @@ float STC3100::compute2Complement(uint8_t msb, uint8_t lsb) {
 	return val;
 }
 
-void STC3100::computeTemp(float *temp)
+void STC3100::computeTemp()
 {
     uint8_t tl=_stc_data.TemperatureLow, th=_stc_data.TemperatureHigh;
 	uint32_t t;
@@ -201,8 +198,17 @@ void STC3100::computeTemp(float *temp)
 	t = th;
 	t <<= 8;
 	val = (t & 0xFF00) | tl;
-	*temp = ((float) val * 0.125);
 	
+        _temperature = ((float) val * 0.125);
+	
+}
+
+
+float STC3100::getCorrectedVoltage(float int_res) {
+
+	float res = _voltage + int_res * _current / 1000.;
+	return res;
+
 }
 
 /***************************************************************************
@@ -246,39 +252,20 @@ bool STC3100::begin(uint32_t r_sens, stc3100_mode_t mode)
 
 
 
-/**************************************************************************/
-/*!
-    @brief  Provides the sensor_t data for this sensor
-*/
-/**************************************************************************/
-void STC3100::getSensor(sensor_t *sensor)
-{
-  /* Clear the sensor_t object */
-  memset(sensor, 0, sizeof(sensor_t));
-
-  /* Insert the sensor name in the fixed length char array */
-  strncpy (sensor->name, "STC3100", sizeof(sensor->name) - 1);
-  sensor->name[sizeof(sensor->name)- 1] = 0;
-  sensor->version     = _deviceID;
-  sensor->sensor_id   = _sensorID;
-  //sensor->type        = SENSOR_TYPE_VOLTAGE;
-}
 
 /**************************************************************************/
 /*!
     @brief  Reads the sensor and returns the data as a sensors_event_t
 */
 /**************************************************************************/
-bool STC3100::getBatteryData(tBatteryData *batt)
+bool STC3100::refresh()
 {
   readChip();
   
-  memset(batt, 0, sizeof(tBatteryData));
-
-  computeVoltage (&batt->Voltage);
-  computeCharge  (&batt->Charge);
-  computeCurrent (&batt->Current);
-  computeTemp    (&batt->Temperature);
+  computeVoltage ();
+  computeCharge  ();
+  computeCurrent ();
+  computeTemp    ();
   
   return true;
 }

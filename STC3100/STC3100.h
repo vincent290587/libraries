@@ -111,13 +111,18 @@ class STC3100
   public:
     STC3100(int32_t sensorID = -1);
   
-    bool  begin(uint32_t r_sens, stc3100_mode_t mode = STC3100_MODE_ULTRAHIGHRES);
+    bool  begin(uint32_t r_sens = 20, stc3100_mode_t mode = STC3100_MODE_ULTRAHIGHRES);
 	
-	void  getSensor(sensor_t*);
-	
-	float compute2Complement(uint8_t msb, uint8_t lsb);
-	
-    bool  getBatteryData(tBatteryData*);
+	bool refresh();
+
+	float getCurrent() { return _current;}
+	float getVoltage() {return _voltage;}
+	float getTemperature() {return _temperature;}
+	float getCorrectedVoltage(float int_res);
+
+	float getCharge() const {
+		return _charge;
+	}
 	
   private:
     int32_t _sensorID;
@@ -125,12 +130,28 @@ class STC3100
 	int32_t _r_sens;
 	tSTC31000Data _stc_data;
 	
+	// voltage
+	float _voltage;
+	/**Value of the current in mA*/
+	float _current;
+	/**Value of the temperature in C*/
+	float _temperature;
+	/**Value of the current charge of the battery in mAh*/
+	float _charge;
+	// counter
+	float _counter;
+
+        void read8(byte reg, uint8_t *value);
+        void read16(byte reg, uint16_t *value);
+        void readS16(byte reg, int16_t *value);
+	void writeCommand(uint8_t reg, uint8_t value);
 	void  readChip();
-	void  computeVoltage (float*);
-	void  computeCharge  (float*);
-	void  computeCurrent (float*);
-	void  computeCounter(float*);
-	void  computeTemp(float*);
+	void computeVoltage();
+	void computeCharge();
+	void computeCurrent();
+	void computeCounter();
+	void computeTemp();
+        float compute2Complement(uint8_t msb, uint8_t lsb);
 };
 
 #endif
