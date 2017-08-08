@@ -44,7 +44,10 @@ class Nordic {
 	int32_t getLon() const {
       return _lon;
     }
-	int32_t getEle() const {
+	int32_t getGpsSpeed() const {
+      return _gps_speed;
+    }
+	float getEle() const {
       return _ele;
     }
 	unsigned long getSecJ() const {
@@ -92,7 +95,7 @@ class Nordic {
     bool isdigit(char c) {
       return c >= '0' && c <= '9';
     }
-    unsigned long parse_decimal();
+    int32_t parse_decimal();
 	int32_t parse_sint();
     uint8_t term_complete();
 
@@ -104,7 +107,8 @@ class Nordic {
 	
 	int32_t _lat;
 	int32_t _lon;
-	int32_t _ele;
+	float _ele;
+	int32_t _gps_speed;
 	unsigned long _sec_jour;
 	
     unsigned long _ancs_type;

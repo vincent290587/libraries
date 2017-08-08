@@ -186,7 +186,7 @@ float STC3100::compute2Complement(uint8_t msb, uint8_t lsb) {
 	  ret = (float)val;
 	}
 	
-	return val;
+	return ret;
 }
 
 void STC3100::computeTemp()
@@ -206,7 +206,7 @@ void STC3100::computeTemp()
 
 float STC3100::getCorrectedVoltage(float int_res) {
 
-	float res = _voltage + int_res * _current / 1000.;
+	float res = _voltage - int_res * _current / 1000.;
 	return res;
 
 }

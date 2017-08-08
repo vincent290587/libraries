@@ -23,6 +23,10 @@ Nordic::Nordic() {
   _ancs_type = 0;
   _dbg_type = 0;
   _speed = 0.;
+  _sec_jour = 0;
+  _dbg_code = 0;
+  _dbg_line = 0;
+  _gps_data_good = 0;
   _encoded_characters = 0;
   _is_checksum_term = false;
   _term_number = _term_offset = 0;
@@ -31,7 +35,7 @@ Nordic::Nordic() {
   memset(_term, 0, MAX_SIZE * sizeof(char));
 }
 
-Nordic::Nordic(const Nordic& orig) {
+Nordic::Nordic(const Nordic& orig) : Nordic() {
 }
 
 Nordic::~Nordic() {
@@ -49,6 +53,7 @@ uint8_t Nordic::encode(char c) {
   switch (c) {
     case ',': // term terminators
       _parity ^= c;
+      // no break;
     case '\r':
     case '\n':
       if (_started == true) {
@@ -137,7 +142,11 @@ uint8_t Nordic::term_complete() {
         _lon = parse_sint();
         break;
 	  case COMBINE(_SENTENCE_LOC, 4):
-        _ele = parse_sint();
+        _ele = parse_sint() / 100.;
+	    // TODO check ret_val = _SENTENCE_LOC;
+        break;
+	  case COMBINE(_SENTENCE_LOC, 5):
+        _gps_speed = parse_sint();
         ret_val = _SENTENCE_LOC;
         break;
 
@@ -220,12 +229,12 @@ int Nordic::nstrcmp(const char *str1, const char *str2) {
   return *str1;
 }
 
-unsigned long Nordic::parse_decimal()
+int32_t Nordic::parse_decimal()
 {
   char *p = _term;
   bool isneg = *p == '-';
   if (isneg) ++p;
-  unsigned long ret = natol(p);
+  int32_t ret = 100. * (int32_t)natol(p);
   while (isdigit(*p)) ++p;
   if (*p == '.')
   {

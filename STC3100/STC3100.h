@@ -89,20 +89,6 @@ typedef union
 } tSTC31000Data;
 	
 	
-typedef struct
-{
-    /**Value of the voltage in mV.*/
-    float Voltage;
-    /**Value of the current in mA*/
-    float Current;
-    /**Value of the temperature in ºC*/
-    float Temperature;
-    /**Value of the current charge of the battery in mAh*/
-    float Charge;
-} tBatteryData;
-	
-	/*=========================================================================*/
-
 
 
 
