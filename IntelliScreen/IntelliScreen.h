@@ -69,7 +69,7 @@ class IntelliScreen
 	void buttonPressEvent ();
 	
 
- private:
+ protected:
     uint8_t _mode_affi, _mode_affi_prec, _mode_calcul;
 	uint8_t _stored_mode;
     uint8_t _selectionMenu, _pendingAction;

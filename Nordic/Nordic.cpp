@@ -20,9 +20,10 @@ Nordic::Nordic() {
   _bpm = 0;
   _rr = 0;
   _rpm = 0;
+  _ele = 0;
   _ancs_type = 0;
   _dbg_type = 0;
-  _speed = 0.;
+  _cad_speed = 0.;
   _sec_jour = 0;
   _dbg_code = 0;
   _dbg_line = 0;
@@ -142,8 +143,7 @@ uint8_t Nordic::term_complete() {
         _lon = parse_sint();
         break;
 	  case COMBINE(_SENTENCE_LOC, 4):
-        _ele = parse_sint() / 100.;
-	    // TODO check ret_val = _SENTENCE_LOC;
+        _ele = parse_sint();
         break;
 	  case COMBINE(_SENTENCE_LOC, 5):
         _gps_speed = parse_sint();
@@ -162,7 +162,7 @@ uint8_t Nordic::term_complete() {
         _rpm = natol(_term);
         break;
       case COMBINE(_SENTENCE_CAD, 2):
-        _speed = (float)natol(_term) / 100.;
+        _cad_speed = natol(_term);
         ret_val = _SENTENCE_CAD;
         break;
 

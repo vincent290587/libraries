@@ -47,7 +47,7 @@ class Nordic {
 	int32_t getGpsSpeed() const {
       return _gps_speed;
     }
-	float getEle() const {
+	int32_t getEle() const {
       return _ele;
     }
 	unsigned long getSecJ() const {
@@ -62,8 +62,8 @@ class Nordic {
     unsigned long getRPM() {
       return _rpm;
     }
-    float getSpeed() {
-      return _speed;
+    unsigned long getCadSpeed() {
+      return _cad_speed;
     }
     unsigned long getANCS_type() {
       return _ancs_type;
@@ -103,11 +103,11 @@ class Nordic {
 	uint8_t _btn;
     unsigned long _bpm, _rr;
     unsigned long _rpm;
-	float _speed;
+    unsigned long _cad_speed;
 	
 	int32_t _lat;
 	int32_t _lon;
-	float _ele;
+	int32_t _ele;
 	int32_t _gps_speed;
 	unsigned long _sec_jour;
 	
