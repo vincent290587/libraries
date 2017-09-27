@@ -24,9 +24,7 @@
 #ifndef MTP_H
 #define MTP_H
 
-#if !defined(USB_MTPDISK)
-#error "You need to select USB Type: 'MTP Disk (Experimental)'"
-#endif
+
 
 #include <Arduino.h>
 // #include <HardwareSerial.h>
@@ -34,7 +32,7 @@
 #include <SPI.h>
 #include "SdFat.h"
 
-SdFatSdioEX SD;
+extern SdFat SD;
 
 // TODO:
 //   support multiple storages
@@ -43,8 +41,8 @@ SdFatSdioEX SD;
 //   events (notify usb host when local storage changes)
 
 // These should probably be weak.
-void mtp_yield() {}
-void mtp_lock_storage(bool lock) { }
+void mtp_yield();
+void mtp_lock_storage(bool lock);
 
 // This interface lets the MTP responder interface any storage.
 // We'll need to give the MTP responder a pointer to one of these.
