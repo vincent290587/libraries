@@ -43,13 +43,17 @@ uint8_t IntelliScreen::getModeAffi() {
 }
 
 void IntelliScreen::menuDescend () {
-	_selectionMenu++;
-	_selectionMenu = _selectionMenu % NB_ELEM_MENU;
+	if (_is_menu_active) {
+		_selectionMenu++;
+		_selectionMenu = _selectionMenu % NB_ELEM_MENU;
+	}
 }
 
 void IntelliScreen::menuMonte () {
-	_selectionMenu+=NB_ELEM_MENU - 1;
-	_selectionMenu = _selectionMenu % NB_ELEM_MENU;
+	if (_is_menu_active) {
+		_selectionMenu+=NB_ELEM_MENU - 1;
+		_selectionMenu = _selectionMenu % NB_ELEM_MENU;
+	}
 }
 
 
@@ -69,7 +73,7 @@ void IntelliScreen::menuClic () {
 
 	} else {
 		// reset selected item
-		_selectionMenu = 0;
+		//_selectionMenu = 0;
 		// activate menu
 		_is_menu_active = 1;
 	}
