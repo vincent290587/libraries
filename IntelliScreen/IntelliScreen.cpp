@@ -2,90 +2,77 @@
 #include "IntelliScreen.h"
 #include <WProgram.h>
 
+#define NB_ELEM_MENU   menu.nb_elem
+
+
+IntelliScreen* IntelliScreen::pIntelliScreen = nullptr;
+
+
+static void callbackMENU(int entier) {
+	// empty callback
+}
 
 IntelliScreen::IntelliScreen() {
-	
-  _mode_calcul = MODE_GPS;
-  _mode_affi = MODE_SD;
-  _BL_level = 0;
-  _nb_elem_menu = 0;
-  
-  addMenuItem(" Retour");
-  addMenuItem(" BackLight");
+
+	_mode_calcul = 0;
+	_mode_affi = 0;
+	_is_menu_active = 0;
+
+	pIntelliScreen = this;
+
+	memset(&menu, 0, sizeof(sIntelliMenu));
+
+	// init all the menu items
+	sIntelliMenuItem item;
+
+	item.name = "Menu";
+	item.p_func = callbackMENU;
+	this->addMenuItem(&item);
+
 }
 
 
-void IntelliScreen::machineEtat () {
+uint8_t IntelliScreen::getModeAffi() {
 
-  if (_pendingAction > NO_ACTION) {
-    if (_mode_affi != MODE_MENU) {
-      // mode course ou HT / HRM
-      // -> on va au menu
-	  _mode_affi_prec = _mode_affi;
-	  _mode_affi = MODE_MENU;
-    } else {
-      // mode menu
-      if (_pendingAction == BUTTON_DOWN) {
-        menuDescend ();
-      } else if (_pendingAction == BUTTON_UP) {
-        menuMonte ();
-      } else {
-        menuClic ();
-      }
-    }
-    _pendingAction = NO_ACTION;
-  }
-  
+	if (_is_menu_active) {
+		return I_MODE_MENU;
+	} else {
+		return _mode_affi;
+	}
+
 }
 
 void IntelliScreen::menuDescend () {
-  _selectionMenu++;
-  _selectionMenu = _selectionMenu % _nb_elem_menu;
+	_selectionMenu++;
+	_selectionMenu = _selectionMenu % NB_ELEM_MENU;
 }
 
 void IntelliScreen::menuMonte () {
-  _selectionMenu+=_nb_elem_menu - 1;
-  _selectionMenu = _selectionMenu % _nb_elem_menu;
+	_selectionMenu+=NB_ELEM_MENU - 1;
+	_selectionMenu = _selectionMenu % NB_ELEM_MENU;
 }
 
 
 void IntelliScreen::menuClic () {
-  
-  _selectionMenu+=_nb_elem_menu;
-  _selectionMenu = _selectionMenu % _nb_elem_menu;
-  
-  if (_selectionMenu == 0) {
-	  _mode_affi = _mode_affi_prec;
-  } else if (_selectionMenu == 1) {
-	  _BL_level = _BL_level>0 ? 0 : 1;
-  } else {
-	  _mode_affi = _selectionMenu;
-  }
 
-}
+	if (_is_menu_active) {
+		_is_menu_active = 0;
 
-void IntelliScreen::buttonDownEvent () {
+		_selectionMenu = _selectionMenu % NB_ELEM_MENU;
 
-  if (!_pendingAction) {
-    _pendingAction = BUTTON_DOWN;
-  }
+		// if item was clicked: call the function
+		if (_selectionMenu > I_MODE_MENU) {
+			// an item other than menu was clicked
+			// -> call its handler
+			(*menu.item[_selectionMenu].p_func)(_selectionMenu);
+		}
 
-}
-
-void IntelliScreen::buttonUpEvent () {
-
-  if (!_pendingAction) {
-    _pendingAction = BUTTON_UP;
-  }
-
-}
-
-
-void IntelliScreen::buttonPressEvent () {
-
-  if (!_pendingAction) {
-    _pendingAction = BUTTON_PRESS;
-  }
+	} else {
+		// reset selected item
+		_selectionMenu = 0;
+		// activate menu
+		_is_menu_active = 1;
+	}
 
 }
 

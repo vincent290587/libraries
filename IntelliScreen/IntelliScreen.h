@@ -21,62 +21,71 @@
 
 #include "WProgram.h"
 
+#define NB_MENU_ITEMS     20
+#define I_MODE_MENU       0
+
+/**
+ * Enums
+ */
 enum ACTIONS {
-  NO_ACTION,
-  BUTTON_DOWN,
-  BUTTON_UP,
-  BUTTON_PRESS,
-  ACTIONS_NB
+	NO_ACTION = 0,
+	BUTTON_DOWN,
+	BUTTON_UP,
+	BUTTON_PRESS,
+	ACTIONS_NB
 };
 
-enum MODE {
-  MODE_SD,
-  MODE_GPS,
-  MODE_CRS,
-  MODE_PAR,
-  MODE_HRM,
-  MODE_HT,
-  MODE_SIMU,
-  MODE_MENU
-};
 
-class IntelliScreen
-{
-  public:
+typedef void (*intelli_event)(int);
+
+typedef struct {
+	String name;
+	intelli_event p_func;  // Declare typedef
+} sIntelliMenuItem;
+
+typedef struct {
+	uint16_t nb_elem;
+	sIntelliMenuItem item[NB_MENU_ITEMS];  // Declare typedef
+} sIntelliMenu;
+
+
+class IntelliScreen {
+public:
 	IntelliScreen();
-    virtual uint8_t getModeCalcul() {return _mode_calcul;}
-	virtual uint8_t getModeAffi() {return _mode_affi;}
+	uint8_t getModeCalcul() {return _mode_calcul;}
+	uint8_t getModeAffi();
+	uint8_t getModeAffiPrec() {return _mode_affi_prec;}
 	void setModeCalcul(uint8_t mode) {_mode_calcul = mode;}
 	void setModeAffi(uint8_t mode) {_mode_affi = mode;}
 	void setModeAffiPrec(uint8_t mode) {_mode_affi_prec = mode;}
 	void setStoredMode(uint8_t mode) {_stored_mode = mode;}
 	uint8_t getStoredMode() {return _stored_mode;}
 	uint8_t getSelectionMenu() {return _selectionMenu;}
-	uint8_t getNbElemMenu() {return _nb_elem_menu;}
-	uint8_t getBackLight() {return _BL_level;}
-	uint8_t getPendingAction() {return _pendingAction;}
-	const char *getMenuItem(uint8_t indice) {return _items[indice];}
-	void addMenuItem(const char *item) {
-		_items[_nb_elem_menu] = item;
-		_nb_elem_menu++;
+	uint16_t getNbElemMenu() {return menu.nb_elem;}
+	String getMenuItem(uint16_t indice) {return menu.item[indice].name;}
+
+	void addMenuItem(sIntelliMenuItem *item) {
+		menu.item[menu.nb_elem].name = item->name;
+		menu.item[menu.nb_elem].p_func = item->p_func;
+		menu.nb_elem++;
 	}
-	void machineEtat ();
+
 	void menuDescend ();
 	void menuMonte ();
 	void menuClic ();
-	void buttonUpEvent ();
-	void buttonDownEvent ();
-	void buttonPressEvent ();
-	
 
- protected:
-    uint8_t _mode_affi, _mode_affi_prec, _mode_calcul;
+	uint8_t _is_menu_active;
+
+	static IntelliScreen* pIntelliScreen;
+protected:
+
+
+private:
+	uint8_t _mode_affi, _mode_affi_prec, _mode_calcul;
 	uint8_t _stored_mode;
-    uint8_t _selectionMenu, _pendingAction;
-    uint8_t _nb_elem_menu;
-	uint8_t _BL_level;
-    
-	const char *_items[10];
+	uint8_t _selectionMenu;
+
+	sIntelliMenu menu;
 };
 
 

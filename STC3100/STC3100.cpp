@@ -10,7 +10,7 @@
  #include "WProgram.h"
 #endif
 
-#include <Wire.h>
+#include <i2c_t3.h>
 
 #include <math.h>
 #include <limits.h>
