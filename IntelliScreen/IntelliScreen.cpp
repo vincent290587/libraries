@@ -60,9 +60,11 @@ void IntelliScreen::menuMonte () {
 void IntelliScreen::menuClic () {
 
 	if (_is_menu_active) {
-		_is_menu_active = 0;
 
 		_selectionMenu = _selectionMenu % NB_ELEM_MENU;
+
+      if (selectionMenu == 0)
+          _is_menu_active = 0;
 
 		// if item was clicked: call the function
 		if (_selectionMenu > I_MODE_MENU) {
@@ -76,7 +78,18 @@ void IntelliScreen::menuClic () {
 		//_selectionMenu = 0;
 		// activate menu
 		_is_menu_active = 1;
+      m_act_menu = 0;
 	}
 
 }
 
+void IntelliScreen::activateMenu(int indm = 0) {
+
+m_act_menu = indm;
+
+}
+
+int IntelliScreen::getActiveMenu(void) {
+return m_act_menu;
+
+}
