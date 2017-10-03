@@ -22,7 +22,7 @@
 #include "WProgram.h"
 
 #define NB_MENU_ITEMS     10
-#define NB_MENU           3
+#define NB_MENU           5
 #define I_MODE_MENU       0
 
 /**
@@ -62,14 +62,12 @@ public:
 	void setStoredMode(uint8_t mode) {_stored_mode = mode;}
 	uint8_t getStoredMode() {return _stored_mode;}
 	uint8_t getSelectionMenu() {return _selectionMenu;}
-	uint16_t getNbElemMenu(uint8_t menu_ind=0) {return menu [menu_ind].nb_elem;}
-	String getMenuItem(uint8_t menu_ind=0, uint16_t indice) {return menu [menu_ind].item[indice].name;}
+	uint16_t getNbElemMenu(uint8_t menu_ind=0) {return menu[menu_ind].nb_elem;}
+	String getMenuItem(uint8_t menu_ind, uint16_t indice) {return menu[menu_ind].item[indice].name;}
+	int getActiveMenu(void);
+	void activateSubMenu(int indm);
 
-	void addMenuItem(uint8_t menu_ind=0, sIntelliMenuItem *item) {
-		menu[menu_ind].item[menu.nb_elem].name = item->name;
-		menu[menu_ind].item[menu.nb_elem].p_func = item->p_func;
-		menu[menu_ind].nb_elem++;
-	}
+	void addMenuItem(uint8_t menu_ind, sIntelliMenuItem *item);
 
 	void menuDescend ();
 	void menuMonte ();
@@ -84,7 +82,7 @@ protected:
 private:
 	uint8_t _mode_affi, _mode_affi_prec, _mode_calcul;
 	uint8_t _stored_mode;
-	uint8_t _selectionMenu;
+	uint8_t _selectionMenu, m_act_menu;
 
 	sIntelliMenu menu[NB_MENU];
 };

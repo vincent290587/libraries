@@ -2,7 +2,7 @@
 #include "IntelliScreen.h"
 #include <WProgram.h>
 
-#define NB_ELEM_MENU   menu.nb_elem
+#define NB_ELEM_MENU   menu[m_act_menu].nb_elem
 
 
 IntelliScreen* IntelliScreen::pIntelliScreen = nullptr;
@@ -12,11 +12,17 @@ static void callbackMENU(int entier) {
 	// empty callback
 }
 
+static void callbackSUBMENU(int entier) {
+	// empty callback
+}
+
 IntelliScreen::IntelliScreen() {
 
 	_mode_calcul = 0;
 	_mode_affi = 0;
+
 	_is_menu_active = 0;
+	m_act_menu = 0;
 
 	pIntelliScreen = this;
 
@@ -27,7 +33,7 @@ IntelliScreen::IntelliScreen() {
 
 	item.name = "Menu";
 	item.p_func = callbackMENU;
-	this->addMenuItem(&item);
+	this->addMenuItem(0, &item);
 
 }
 
@@ -63,33 +69,52 @@ void IntelliScreen::menuClic () {
 
 		_selectionMenu = _selectionMenu % NB_ELEM_MENU;
 
-      if (selectionMenu == 0)
-          _is_menu_active = 0;
+		if (_selectionMenu == I_MODE_MENU && m_act_menu == 0) {
+			_is_menu_active = 0;
+		} else if (_selectionMenu == I_MODE_MENU) {
+			m_act_menu = 0;
+		} else {
 
-		// if item was clicked: call the function
-		if (_selectionMenu > I_MODE_MENU) {
-			// an item other than menu was clicked
-			// -> call its handler
-			(*menu.item[_selectionMenu].p_func)(_selectionMenu);
+			// if item was clicked: call the function
+			if (_selectionMenu > I_MODE_MENU) {
+				// an item other than menu was clicked
+				// -> call its handler
+				(*menu[m_act_menu].item[_selectionMenu].p_func)(_selectionMenu);
+			}
+
 		}
 
 	} else {
-		// reset selected item
-		//_selectionMenu = 0;
 		// activate menu
 		_is_menu_active = 1;
-      m_act_menu = 0;
+		m_act_menu = 0;
 	}
 
 }
 
-void IntelliScreen::activateMenu(int indm = 0) {
+void IntelliScreen::activateSubMenu(int indm) {
 
-m_act_menu = indm;
+	m_act_menu = indm;
 
 }
 
 int IntelliScreen::getActiveMenu(void) {
-return m_act_menu;
+	return m_act_menu;
+}
 
+void IntelliScreen::addMenuItem(uint8_t menu_ind, sIntelliMenuItem *item) {
+
+	// check submenus
+	if (menu_ind && menu[menu_ind].nb_elem == 0) {
+
+		// this submenu does not have the return button yet
+		menu[menu_ind].item[0].name = "Retour";
+		menu[menu_ind].item[0].p_func = callbackSUBMENU;
+		menu[menu_ind].nb_elem = 1;
+
+	}
+
+	menu[menu_ind].item[menu[menu_ind].nb_elem].name = item->name;
+	menu[menu_ind].item[menu[menu_ind].nb_elem].p_func = item->p_func;
+	menu[menu_ind].nb_elem++;
 }
