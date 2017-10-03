@@ -70,8 +70,10 @@ void IntelliScreen::menuClic () {
 		_selectionMenu = _selectionMenu % NB_ELEM_MENU;
 
 		if (_selectionMenu == I_MODE_MENU && m_act_menu == 0) {
+			// back to affi
 			_is_menu_active = 0;
 		} else if (_selectionMenu == I_MODE_MENU) {
+			// go back to main menu
 			m_act_menu = 0;
 		} else {
 
@@ -88,6 +90,8 @@ void IntelliScreen::menuClic () {
 		// activate menu
 		_is_menu_active = 1;
 		m_act_menu = 0;
+		// activate first element
+		_selectionMenu = 1;
 	}
 
 }
@@ -96,10 +100,18 @@ void IntelliScreen::activateSubMenu(int indm) {
 
 	m_act_menu = indm;
 
+	// activate first element
+	_selectionMenu = 1;
+
 }
 
-int IntelliScreen::getActiveMenu(void) {
+int IntelliScreen::getActiveSubMenu(void) {
 	return m_act_menu;
+}
+
+void IntelliScreen::deactivateMenu() {
+	m_act_menu = 0;
+	_is_menu_active = 0;
 }
 
 void IntelliScreen::addMenuItem(uint8_t menu_ind, sIntelliMenuItem *item) {

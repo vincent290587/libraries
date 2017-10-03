@@ -64,8 +64,9 @@ public:
 	uint8_t getSelectionMenu() {return _selectionMenu;}
 	uint16_t getNbElemMenu(uint8_t menu_ind=0) {return menu[menu_ind].nb_elem;}
 	String getMenuItem(uint8_t menu_ind, uint16_t indice) {return menu[menu_ind].item[indice].name;}
-	int getActiveMenu(void);
+	int getActiveSubMenu(void);
 	void activateSubMenu(int indm);
+	void deactivateMenu();
 
 	void addMenuItem(uint8_t menu_ind, sIntelliMenuItem *item);
 
